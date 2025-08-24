@@ -19,7 +19,20 @@ def book_list(request):
             books = books.filter(title__icontains=q)  # parameterized by ORM
     return render(request, "bookshelf/book_list.html", {"books": books, "form": form})
 
+@permission_required("bookshelf.can_create", raise_exception=True)
+@require_http_methods(["GET", "POST"])
+def book_create(request):
+    if request.method == "POST":
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("book_list")
+    else:
+        form = ExampleForm()
+    return render(request, "bookshelf/form_example.html", {"form": form, "action": "Create"})
 
+
+"""
 @permission_required("bookshelf.can_create", raise_exception=True)
 @require_http_methods(["GET", "POST"])
 def book_create(request):
@@ -37,7 +50,7 @@ def book_create(request):
     else:
         form = BookForm()
     return render(request, "bookshelf/form_example.html", {"form": form, "action": "Create"})
-
+"""
 
 @permission_required("bookshelf.can_edit", raise_exception=True)
 @require_http_methods(["GET", "POST"])
