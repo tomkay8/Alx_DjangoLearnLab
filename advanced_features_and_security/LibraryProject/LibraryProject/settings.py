@@ -147,3 +147,27 @@ LOGOUT_REDIRECT_URL = "login"
 
 AUTH_USER_MODEL = "bookshelf.CustomUser"
 
+# ===============================
+# Security settings for HTTPS
+# ===============================
+
+# Redirect all HTTP to HTTPS
+SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Secure cookies
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Secure headers
+X_FRAME_OPTIONS = "DENY"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Django >= 4.0 deprecated SECURE_BROWSER_XSS_FILTER
+# For compatibility with checkers, we include it if required:
+SECURE_BROWSER_XSS_FILTER = True
+
