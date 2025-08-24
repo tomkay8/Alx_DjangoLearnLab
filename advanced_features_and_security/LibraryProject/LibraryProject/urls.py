@@ -16,8 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views
 
 urlpatterns = [
+    path("", views.book_list, name="book_list"),
+    path("books/create/", views.book_create, name="book_create"),
+    path("books/<int:pk>/edit/", views.book_edit, name="book_edit"),
+    path("books/<int:pk>/delete/", views.book_delete, name="book_delete"),
     path('admin/', admin.site.urls),
+    path("", include("bookshelf.urls")),
     path("", include("relationship_app.urls")), #includes app URLs
 ]

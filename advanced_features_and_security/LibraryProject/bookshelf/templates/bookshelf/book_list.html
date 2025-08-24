@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Books</title>
+</head>
+<body>
+  <h1>Books</h1>
+
+  <!-- Safe search form (GET) -->
+  <form method="get">
+    {{ form.q.label_tag }} {{ form.q }}
+    <button type="submit">Search</button>
+  </form>
+
+  <ul>
+    {% for book in books %}
+      <li>
+        {{ book.title }} by {{ book.author }}
+        <!-- Delete is POST-only + CSRF -->
+        <form method="post" action="{% url 'book_delete' book.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit">Delete</button>
+        </form>
+        <a href="{% url 'book_edit' book.pk %}">Edit</a>
+      </li>
+    {% empty %}
+      <li>No books yet.</li>
+    {% endfor %}
+  </ul>
+
+  <p><a href="{% url 'book_create' %}">Add Book</a></p>
+</body>
+</html>
+
