@@ -151,6 +151,9 @@ AUTH_USER_MODEL = "bookshelf.CustomUser"
 # Security settings for HTTPS
 # ===============================
 
+# Trust the X-Forwarded-Proto header set by the proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Redirect all HTTP to HTTPS
 SECURE_SSL_REDIRECT = True
 
