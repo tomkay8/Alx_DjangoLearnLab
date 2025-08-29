@@ -8,6 +8,7 @@ from django.db import models
 class Author(models.Model):
     # Author has just a name
     name = models.CharField(max_length=100)
+    birth_year = models.IntegerField()
 
     def __str__(self):
         return self.name
