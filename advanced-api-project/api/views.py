@@ -33,7 +33,8 @@ class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 
-class ListView(generics.ListAPIView):
+
+class CreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
@@ -46,3 +47,4 @@ class UpdateView(generics.UpdateAPIView):
 class DeleteView(generics.DestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+

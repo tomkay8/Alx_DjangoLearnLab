@@ -4,8 +4,8 @@ from .views import BookListCreateView, BookDetailView, ListView, UpdateView, Del
 urlpatterns = [
     path("books/", BookListCreateView.as_view(), name="book-list-create"),
     path("books/<int:pk>/", BookDetailView.as_view(), name="book-detail"),
-    path('list/', ListView.as_view(), name='list-view'),
-    path('update/<int:pk>/', UpdateView.as_view(), name='update-view'),
-    path('delete/<int:pk>/', DeleteView.as_view(), name='delete-view'),
+    path("books/create/", CreateView.as_view(), name="books-create"),
+    path("books/update/<int:pk>/", UpdateView.as_view(), name="books-update"),
+    path("books/delete/<int:pk>/", DeleteView.as_view(), name="books-delete"),
 ]
 
