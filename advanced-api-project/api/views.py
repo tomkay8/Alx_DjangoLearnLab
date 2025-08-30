@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 from .models import Book
 from .serializers import BookSerializer
 
@@ -12,6 +14,13 @@ from .serializers import BookSerializer
 class BookListCreateView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
+    # --- New filtering, searching, ordering configs ---
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['title', 'author', 'publication_year']  # filter by these fields
+    search_fields = ['title', 'author']  # search on these fields
+    ordering_fields = ['title', 'publication_year']  # allow ordering by these fields
+    ordering = ['title']  # default ordering
 
     # Only authenticated users can create
     def get_permissions(self):
