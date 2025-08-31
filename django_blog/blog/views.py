@@ -7,8 +7,10 @@ from django import forms
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Post
+from .models import Post, Comment
 from .forms import PostForm
+from .forms import CommentForm
+from django.shortcuts import get_object_or_404, redirect
 
 # Extend UserCreationForm for registration
 class RegisterForm(UserCreationForm):
@@ -129,3 +131,29 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "blog/comment_form.html"
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        post = get_object_or_404(Post, pk=self.kwargs["pk"])
+        form.instance.post = post
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("post-detail", kwargs={"pk": self.kwargs["pk"]})
+
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        comment = Comment(
+            post=post,
+            author=request.POST.get("author"),
+            text=request.POST.get("text"),
+        )
+        comment.save()
+        return redirect("post-detail", pk=post.pk)
+    return render(request, "blog/add_comment.html", {"post": post})
