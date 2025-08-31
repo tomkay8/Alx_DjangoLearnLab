@@ -1,6 +1,7 @@
 from rest_framework import generics, viewsets, permissions, filters
 from rest_framework.pagination import PageNumberPagination
-from .models import Post, Comment
+from .models import Post, Comment, Like
+from notifications.models import Notification
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -48,3 +49,28 @@ class FeedView(generics.ListAPIView):
         # Return posts from users the current user follows
         following_users = self.request.user.following.all()  # renamed variable
         return Post.objects.filter(author__in=following_users).order_by('-created_at')
+
+class LikePostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if created:
+            # Create notification
+            if post.author != request.user:
+                Notification.objects.create(
+                    recipient=post.author,
+                    actor=request.user,
+                    verb='liked your post',
+                    target=post
+                )
+        return Response({'status': 'liked'})
+
+class UnlikePostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        Like.objects.filter(user=request.user, post=post).delete()
+        return Response({'status': 'unliked'})
