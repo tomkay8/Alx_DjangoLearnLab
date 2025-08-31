@@ -2,6 +2,9 @@ from rest_framework import generics, viewsets, permissions, filters
 from rest_framework.pagination import PageNumberPagination
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 5
@@ -43,5 +46,5 @@ class FeedView(generics.ListAPIView):
 
     def get_queryset(self):
         # Return posts from users the current user follows
-        user = self.request.user
-        return Post.objects.filter(author__in=user.following.all()).order_by('-created_at')
+        following_users = self.request.user.following.all()  # renamed variable
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')
