@@ -47,6 +47,50 @@ class PostDetailView(DetailView):
     template_name = 'blog/post_detail.html'
     context_object_name = 'post'
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['comment_form'] = CommentForm()
+        # comments are available via post.comments.all() because of related_name
+        return ctx
+
+@login_required
+def comment_create(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+    return redirect('post-detail', pk=post.pk)
+
+# Edit comment (only author)
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.object.post.pk})
+
+# Delete comment (only author)
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        # after delete go back to the post detail
+        return reverse_lazy('post-detail', kwargs={'pk': self.object.post.pk})
+
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
