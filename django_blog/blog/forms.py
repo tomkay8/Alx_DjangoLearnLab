@@ -1,7 +1,7 @@
-# blog/forms.py
 from django import forms
 from .models import Post, Comment
 from taggit.models import Tag
+from taggit.forms import TagWidget
 
 class PostForm(forms.ModelForm):
     tags = forms.ModelMultipleChoiceField(
@@ -15,6 +15,7 @@ class PostForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Post title'}),
             'content': forms.Textarea(attrs={'rows': 10, 'placeholder': 'Write your post...'}),
+            'tags': TagWidget(),
         }
 
 class CommentForm(forms.ModelForm):
