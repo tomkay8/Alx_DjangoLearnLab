@@ -1,6 +1,7 @@
 # blog/forms.py
 from django import forms
 from .models import Post, Comment
+from taggit.models import Tag
 
 class PostForm(forms.ModelForm):
     tags = forms.ModelMultipleChoiceField(
